@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import QuestionCard from "@/components/cards/QuestionCard";
+import HomeFilter from "@/components/filters/HomeFilter";
 import Localsearch from "@/components/search/Localsearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
@@ -14,12 +16,17 @@ const questions = [
       { _id: "1", name: "Next.js" },
       { _id: "2", name: "React" },
     ],
-    author: { _id: "1", name: "John Doe" },
+    author: {
+      _id: "1",
+      name: "John Doe",
+      image:
+        "https://www.shutterstock.com/image-photo/very-random-pose-asian-men-260nw-2423213779.jpg",
+    },
     upvotes: 10,
     downvotes: 1,
     answers: 1,
     views: 100,
-    createdAt: new Date(),
+    createdAt: new Date("2020-12-1"),
   },
 
   {
@@ -31,12 +38,17 @@ const questions = [
       { _id: "1", name: "figma" },
       { _id: "2", name: "React" },
     ],
-    author: { _id: "1", name: "Matt stewart" },
+    author: {
+      _id: "1",
+      name: "Matt stewart",
+      image:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNPTZdVhettUOgL4gulcQCozdbr2gvz4nOcQ&s",
+    },
     upvotes: 1,
     downvotes: 12,
     answers: 12,
     views: 10,
-    createdAt: new Date(),
+    createdAt: new Date("2024-1-1"),
   },
 ];
 
@@ -45,7 +57,7 @@ interface SearchParams {
 }
 
 export default async function Home({ searchParams }: SearchParams) {
-  const { query = "" } = await searchParams;
+  const { query = "", filter = "" } = await searchParams;
 
   const filteredQuestions = questions.filter((question) =>
     question.title.toLowerCase().includes(query?.toLowerCase())
@@ -71,13 +83,10 @@ export default async function Home({ searchParams }: SearchParams) {
           route="/"
         />
       </section>
-      {/* HomeFilter */}
+      <HomeFilter />
       <div className="mt-10 flex w-full flex-col gap-6">
         {filteredQuestions.map((question) => (
-          <div key={question._id}>
-            <h1>{question.title}</h1>
-            {/* <p>{question.description}</p> */}
-          </div>
+          <QuestionCard key={question._id} question={question} />
         ))}
       </div>
     </>
