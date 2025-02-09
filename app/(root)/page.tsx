@@ -5,6 +5,8 @@ import HomeFilter from "@/components/filters/HomeFilter";
 import Localsearch from "@/components/search/Localsearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
+import { api } from "@/lib/api";
+import handleError from "@/lib/handlers/error";
 
 const questions = [
   {
@@ -52,6 +54,14 @@ const questions = [
   },
 ];
 
+const test = async () => {
+  try {
+    return await api.users.getAll();
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
 }
@@ -62,6 +72,9 @@ export default async function Home({ searchParams }: SearchParams) {
   const filteredQuestions = questions.filter((question) =>
     question.title.toLowerCase().includes(query?.toLowerCase())
   );
+
+  const users = await test();
+  console.log(users);
 
   return (
     <>
