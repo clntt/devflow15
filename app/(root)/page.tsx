@@ -1,71 +1,31 @@
 import Link from "next/link";
 
-import { auth } from "@/auth";
 import QuestionCard from "@/components/cards/QuestionCard";
 import HomeFilter from "@/components/filters/HomeFilter";
 import Localsearch from "@/components/search/Localsearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
-
-const questions = [
-  {
-    _id: "1",
-    title: "How to create a new project in Next.js?",
-    description:
-      "I am trying to create a new project in Next.js but I am not able to do it. Can someone help me with this?",
-    tags: [
-      { _id: "1", name: "Next.js" },
-      { _id: "2", name: "React" },
-    ],
-    author: {
-      _id: "1",
-      name: "John Doe",
-      image:
-        "https://www.shutterstock.com/image-photo/very-random-pose-asian-men-260nw-2423213779.jpg",
-    },
-    upvotes: 10,
-    downvotes: 1,
-    answers: 1,
-    views: 100,
-    createdAt: new Date("2020-12-1"),
-  },
-
-  {
-    _id: "2",
-    title: "how to design a website using figma?",
-    description:
-      "I am trying to design a website using figma but I am not able to do it. Can someone help me with this?",
-    tags: [
-      { _id: "1", name: "figma" },
-      { _id: "2", name: "React" },
-    ],
-    author: {
-      _id: "1",
-      name: "Matt stewart",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNPTZdVhettUOgL4gulcQCozdbr2gvz4nOcQ&s",
-    },
-    upvotes: 1,
-    downvotes: 12,
-    answers: 12,
-    views: 10,
-    createdAt: new Date("2024-1-1"),
-  },
-];
+import { getQuestions } from "@/lib/actions/question-action";
 
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
 }
 
 export default async function Home({ searchParams }: SearchParams) {
-  const session = await auth();
-  console.log("Session: ", session);
+  const { page, pageSize, query, filter } = await searchParams;
 
-  const { query = "", filter = "" } = await searchParams;
+  const { success, data, error } = await getQuestions({
+    page: Number(page) || 1,
+    pageSize: Number(pageSize) || 10,
+    query: query || "",
+    filter: filter || "",
+  });
 
-  const filteredQuestions = questions.filter((question) =>
-    question.title.toLowerCase().includes(query?.toLowerCase())
-  );
+  const { questions } = data || {};
+
+  // const filteredQuestions = questions?.filter((question) =>
+  //   question.title.toLowerCase().includes(query?.toLowerCase())
+  // );
 
   return (
     <>
@@ -88,11 +48,25 @@ export default async function Home({ searchParams }: SearchParams) {
         />
       </section>
       <HomeFilter />
-      <div className="mt-10 flex w-full flex-col gap-6">
-        {filteredQuestions.map((question) => (
-          <QuestionCard key={question._id} question={question} />
-        ))}
-      </div>
+      {success ? (
+        <div className="mt-10 flex w-full flex-col gap-6">
+          {questions && questions.length > 0 ? (
+            questions.map((question) => (
+              <QuestionCard key={question._id} question={question} />
+            ))
+          ) : (
+            <div className="mt-10 flex w-full items-center justify-center ">
+              <p className="text-dark400_light700">No questions found.</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="mt-10 flex w-full items-center justify-center ">
+          <p className="text-dark400_light700">
+            {error?.message || "Failed to fetch qustions"}
+          </p>
+        </div>
+      )}
     </>
   );
 }
