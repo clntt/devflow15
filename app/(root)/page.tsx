@@ -7,7 +7,7 @@ import Localsearch from "@/components/search/Localsearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
 import { EMPTY_QUESTION } from "@/constants/states";
-import { getQuestions } from "@/lib/actions/question-action";
+import { getQuestions } from "@/lib/actions/question.action";
 
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
