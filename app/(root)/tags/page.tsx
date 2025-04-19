@@ -5,7 +5,7 @@ import DataRenderer from "@/components/DataRenderer";
 import Localsearch from "@/components/search/Localsearch";
 import ROUTES from "@/constants/routes";
 import { EMPTY_TAGS } from "@/constants/states";
-import { getTags } from "@/lib/actions/tag.actions";
+import { getTags } from "@/lib/actions/tag.action";
 
 const Tags = async ({ searchParams }: RouteParams) => {
   const { page, pageSize, query, filter } = await searchParams;
