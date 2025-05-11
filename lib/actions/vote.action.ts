@@ -1,6 +1,8 @@
 "use server";
 import mongoose, { ClientSession } from "mongoose";
+import { revalidatePath } from "next/cache";
 
+import ROUTES from "@/constants/routes";
 import { Answer, Question, Vote } from "@/database";
 
 import action from "../handlers/action";
@@ -64,7 +66,9 @@ export async function createVote(
   const { targetId, targetType, voteType } = validationResult.params!;
   const userId = validationResult.session?.user?.id;
 
-  if (!userId) handleError(new Error("Unauthorized")) as ErrorResponse;
+  if (!userId) {
+    return handleError(new Error("Unauthorized")) as ErrorResponse;
+  }
 
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -72,8 +76,8 @@ export async function createVote(
   try {
     const existingVote = await Vote.findOne({
       author: userId,
-      actionId: targetId,
-      actionType: targetType,
+      id: targetId, // Make sure it matches the model schema
+      type: targetType, // Ensure consistency
     }).session(session);
 
     if (existingVote) {
@@ -90,14 +94,26 @@ export async function createVote(
           { new: true, session }
         );
         await updateVoteCount(
+          { targetId, targetType, voteType: existingVote.voteType, change: -1 },
+          session
+        );
+        await updateVoteCount(
           { targetId, targetType, voteType, change: 1 },
           session
         );
       }
     } else {
-      await Vote.create([{ targetId, targetType, voteType, change: 1 }], {
-        session,
-      });
+      await Vote.create(
+        [
+          {
+            author: userId,
+            id: targetId,
+            type: targetType,
+            voteType,
+          },
+        ],
+        { session }
+      );
       await updateVoteCount(
         { targetId, targetType, voteType, change: 1 },
         session
@@ -106,6 +122,7 @@ export async function createVote(
 
     await session.commitTransaction();
     session.endSession();
+    revalidatePath(ROUTES.QUESTION(targetId));
 
     return { success: true };
   } catch (error) {
