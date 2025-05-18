@@ -17,8 +17,9 @@ import { getQuestion, incrementViews } from "@/lib/actions/question.action";
 import { hasVoted } from "@/lib/actions/vote.action";
 import { formatNumber, timeAgo } from "@/lib/utils";
 
-const QuestionDetails = async ({ params }: RouteParams) => {
+const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
+  const { page, pageSize, filter } = await searchParams;
   await incrementViews({ questionId: id });
   const { success, data: question } = await getQuestion({ questionId: id });
 
@@ -30,9 +31,9 @@ const QuestionDetails = async ({ params }: RouteParams) => {
     error: answerError,
   } = await getAnswers({
     questionId: id,
-    page: 1,
-    pageSize: 10,
-    filter: "latest",
+    page: Number(page) || 1,
+    pageSize: Number(pageSize) || 10,
+    filter,
   });
 
   const hasVotedPromise = hasVoted({

@@ -2,7 +2,9 @@ import React from "react";
 
 import UserCard from "@/components/cards/UserCard";
 import DataRenderer from "@/components/DataRenderer";
+import CommonFilter from "@/components/filters/CommonFilter";
 import Localsearch from "@/components/search/Localsearch";
+import { UserFilters } from "@/constants/filters";
 import ROUTES from "@/constants/routes";
 import { EMPTY_USERS } from "@/constants/states";
 import { getUsers } from "@/lib/actions/user.actions";
@@ -23,13 +25,18 @@ const Community = async ({ searchParams }: RouteParams) => {
     <div>
       <h1 className="h1-bold text-dark100_light900">All Users</h1>
 
-      <div className="mt-11">
+      <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
         <Localsearch
           route={ROUTES.COMMUNITY}
           iconPosition="left"
           imgSrc="/icons/search.svg"
           placeholder="There are some great devs here!"
           otherClasses="flex-1"
+        />
+
+        <CommonFilter
+          filters={UserFilters}
+          otherClasses="min-h-[56px] sm:min-w-[170px]"
         />
       </div>
 
