@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
 import { createAnswer } from "@/lib/actions/answer.action";
-import { api } from "@/lib/api";
+// import { api } from "@/lib/api";
 import { AnswerSchema } from "@/lib/validations";
 
 const Editor = dynamic(() => import("@/components/editor"), {
@@ -88,25 +88,60 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: Props) => {
     const userAnswer = editorRef.current?.getMarkdown();
 
     try {
-      const { success, data, error } = await api.ai.getAnswer(
-        questionTitle,
-        questionContent,
-        userAnswer
-      );
+      // const { success, data, error } = await api.ai.getAnswer(
+      //   questionTitle,
+      //   questionContent,
+      //   userAnswer
+      // );
 
-      if (!success) {
+      // if (!success) {
+      //   return toast({
+      //     title: "Error",
+      //     description: error?.message,
+      //     variant: "destructive",
+      //   });
+      // }
+
+      // const formattedAnswer = data.replace(/<br>/g, " ").toString().trim();
+
+      // if (editorRef.current) {
+      //   editorRef.current.setMarkdown(formattedAnswer);
+
+      //   form.setValue("content", formattedAnswer);
+      //   form.trigger("content");
+      // }
+
+      // toast({
+      //   title: "Success",
+      //   description: "AI generated answer has been generated",
+      // });
+
+      const response = await fetch("/api/ai/answer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: questionTitle,
+          content: questionContent,
+          userAnswer,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
         return toast({
           title: "Error",
-          description: error?.message,
+          description: result.error?.message,
           variant: "destructive",
         });
       }
 
-      const formattedAnswer = data.replace(/<br>/g, " ").toString().trim();
+      const formattedAnswer = result.data.replace(/<br>/g, " ").trim();
 
       if (editorRef.current) {
         editorRef.current.setMarkdown(formattedAnswer);
-
         form.setValue("content", formattedAnswer);
         form.trigger("content");
       }

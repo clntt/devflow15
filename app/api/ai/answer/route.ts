@@ -8,7 +8,6 @@ import { AIAnswerSchema } from "@/lib/validations";
 
 export async function POST(req: Request) {
   const { question, content, userAnswer } = await req.json();
-
   try {
     const validatedData = AIAnswerSchema.safeParse({
       question,
@@ -20,7 +19,7 @@ export async function POST(req: Request) {
     }
 
     const { text } = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: openai("gpt-4-turbo"),
       prompt: `Generate a markdown-formatted response to the following question: "${question}".  
       
       Consider the provided context:  
