@@ -99,7 +99,7 @@ export async function hasSavedQuestion(
   }
 }
 
-export async function getSavedQuestion(
+export async function getSavedQuestions(
   params: PaginatedSearchParams
 ): Promise<ActionResponse<{ collection: Collection[]; isNext: boolean }>> {
   const validationResult = await action({
