@@ -1,13 +1,9 @@
-import Link from "next/link";
-
 import QuestionCard from "@/components/cards/QuestionCard";
 import DataRenderer from "@/components/DataRenderer";
-import HomeFilter from "@/components/filters/HomeFilter";
 import Localsearch from "@/components/search/Localsearch";
-
-import { EMPTY_COLLECTIONS, EMPTY_QUESTION } from "@/constants/states";
-import { getSavedQuestions } from "@/lib/actions/collection.action";
 import ROUTES from "@/constants/routes";
+import { EMPTY_COLLECTIONS } from "@/constants/states";
+import { getSavedQuestions } from "@/lib/actions/collection.action";
 
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
